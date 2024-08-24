@@ -1,4 +1,3 @@
-from msvcrt import getch
 import numpy as np
 import time
 import math
@@ -93,7 +92,7 @@ for r in range(0, bomb_mat.shape[0]):
             view_mat[r,c] = ' '
 
 cur_height = 0
-cursor_pos = (1,1)
+cursor_pos = (2,1)
 cur_credit = start_credit
 cur_item = default_item
 def try_use(item_name):
@@ -219,7 +218,7 @@ def scroll():
         end_game('tardiness')
 
 
-reveal((1,1))
+reveal((2,1))
 flush()
 thlock = threading.Lock()
 
