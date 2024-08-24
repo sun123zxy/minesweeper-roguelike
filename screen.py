@@ -3,7 +3,7 @@ import os
 def flush():
     os.system('cls')
     print(">>> Minesweeper Roguelike <<<")
-    print("version 20240824 by sun123zxy")
+    print(" v0.0.2         by sun123zxy ")
 
 def put_mat(mat):
     for rows in mat:

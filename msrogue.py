@@ -22,7 +22,6 @@ visual_shape = (visual_height, visual_width)
 
 bomb_prob = 0.12
 wall_prob = 0.12
-visible_prob = 0.01
 speed_rate = 0.1
 
 start_credit = 40
@@ -30,7 +29,7 @@ start_credit = 40
 item_price = {
     'armor': 40,
     'eagle': 15,
-    'sledge': 3
+    'sledge': 5
 }
 default_item = 'armor'
 
@@ -83,8 +82,8 @@ bomb_mat = np.vstack([np.full((start_height, visual_width), ' ', str),
 bomb_mat[:,0].fill('#')
 bomb_mat[:,-1].fill('#')
 
-# view_mat = np.full((max_height, visual_width), '*', str)
-view_mat = np.random.choice([' ' ,'*'], size = (max_height, visual_width), p = [visible_prob, 1 - visible_prob])
+view_mat = np.full((max_height, visual_width), '*', str)
+# view_mat = np.random.choice([' ' ,'*'], size = (max_height, visual_width), p = [visible_prob, 1 - visible_prob])
 
 for r in range(0, bomb_mat.shape[0]):
     for c in range(0, bomb_mat.shape[1]):
@@ -186,7 +185,7 @@ def opt_reveal():
         else:
             logs.append("reveal")
     elif view_mat[pos] == ' ' and bomb_mat[pos] == ' ' and count_around_value(bomb_mat, pos, 'B') == count_around_value(view_mat, pos, 'X') + count_around_value((view_mat == ' ') & (bomb_mat == 'B'), pos, True):
-        logs.append("deduce")
+        logs.append("infer")
         is_area = True
 
     if is_reveal:
@@ -215,7 +214,7 @@ def scroll():
     cur_credit = max(0, cur_credit + sweep_bonus * sweeped - misflag_punish * misflagged)
     cur_height += 1
     if cursor_pos[0] - cur_height < 1:
-        end_game('tardiness')
+        end_game('left behind')
 
 
 reveal((2,1))
