@@ -12,4 +12,4 @@ Sweep out the mines quickly to escape from being left behind! A minesweeper game
 
 Written and tested under Python 3.12.5 on Windows 11. `numpy` is the only requirement. Execute `msrogue.py` to start. Adjust constants in the code to control difficulty as you wish.
 
-Executables are packed via `pyinstaller -F msrogue.py`. You may prefer to a create a virtual environment before packing. `numpy` with `mkl` may produce executables of hundreds of MBs. Install `blas` befor `numpy` to avoid such.
+Executables are packed via `pyinstaller -F msrogue.py`. You may prefer to a create a virtual environment before packing. `numpy` with `mkl` may produce executables of hundreds of MBs. Install `blas` before `numpy` to avoid such.
