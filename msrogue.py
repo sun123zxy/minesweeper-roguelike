@@ -4,7 +4,7 @@ import math
 import threading
 from collections import deque
 
-import screen, input
+import console
 
 dir4 = {
     "up": (1,0),
@@ -112,22 +112,25 @@ def t_next_scroll():
 
 logs = deque([])
 def flush():
+    console.clear()
+
     global cur_height,cursor_pos
     cursor_relative_pos = (cursor_pos[0] - cur_height, cursor_pos[1])
-    screen.flush()
+    
     # print('-' * (visual_width * 2 + 1))
     visual_mat = gen_visual_mat(bomb_mat[cur_height : cur_height + visual_height, :], view_mat[cur_height : cur_height + visual_height, :])
     screen_mat = gen_screen_mat(visual_mat, cursor_relative_pos)
-    screen.put_mat(screen_mat[::-1,:])
+    console.put_mat(screen_mat[::-1,:])
     # print('^' * (visual_width * 2 + 1))
-    print(cur_item, "\t\tcredit:", cur_credit)
-    print("height:", cur_height, "\tnext scroll:", format(t_next_scroll(), '.2f') + "s")
+    console.put_str(cur_item, "\t\tcredit:", cur_credit)
+    console.put_str("height:", cur_height, "\tnext scroll:", format(t_next_scroll(), '.2f') + "s")
     # print("cursor:", cursor_relative_pos)
-    print("----- logs -----")
+    console.put_str("----- logs -----")
     while len(logs) > max_log_buffer:
         logs.popleft()
     for log in reversed(logs):
-        print(log)
+        console.put_str(log)
+    console.flush()
 
 def opt_item_switch(item_name):
     global cur_item
@@ -217,13 +220,14 @@ def scroll():
         end_game('left behind')
 
 
+console.init()
 reveal((2,1))
 flush()
 thlock = threading.Lock()
 
 def thready_input():
     while True:
-        opt = input.getopt()
+        opt = console.getopt()
         if not keep_threads_running: break
         with thlock:
             if(opt):
