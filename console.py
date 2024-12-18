@@ -1,7 +1,7 @@
-import unicurses as curses
+import curses
 
 def getopt():
-    ch = curses.getch()
+    ch = stdscr.getch()
     if   ch == curses.KEY_UP: return "move up"
     elif ch == curses.KEY_DOWN: return 'move down'
     elif ch == curses.KEY_LEFT: return 'move left'
@@ -21,27 +21,31 @@ def init():
     curses.noecho()
     curses.cbreak()
     curses.curs_set(0)
-    curses.keypad(stdscr, True)
+    stdscr.keypad(True)
+
+def end():
+    curses.endwin()
 
 def clear():
-    curses.clear()
+    stdscr.clear()
     put_str(">>> Minesweeper Roguelike <<<")
     put_str(1,0," v0.0.3         by sun123zxy ")
 
 def flush():
-    curses.refresh()
+    stdscr.refresh()
 
 def newline():
-    y,x = curses.getyx(stdscr)
-    curses.wmove(stdscr,y+1,0)
+    y,x = stdscr.getyx()
+    stdscr.move(y+1,0)
     
 def put_mat(mat):
     newline()
     for i, rows in enumerate(mat):
         for j, e in enumerate(rows):
-            curses.mvaddstr(i+2,j,e)
+            stdscr.move(i+2,j)
+            stdscr.addstr(e)
 
 def put_str(*args):
     newline()
     for arg in args:
-        curses.addstr(arg)
+        stdscr.addstr(str(arg))

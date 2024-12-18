@@ -36,6 +36,8 @@ default_item = 'armor'
 sweep_bonus = 1
 misflag_punish = 3
 
+# ---
+
 def count_around_value(mat, pos, val, range = 1):
     R, C = mat.shape
     r, c = pos
@@ -75,25 +77,6 @@ def gen_screen_mat(visual_mat, cursor_pos):
             screen_mat[r,c] = ch
     return screen_mat
 
-bomb_mat = np.vstack([np.full((start_height, visual_width), ' ', str),
-              np.random.choice([' ', 'B','#'], size = (max_height - start_height, visual_width), p = [1 - bomb_prob - wall_prob, bomb_prob, wall_prob]
-              )]
-            )
-bomb_mat[:,0].fill('#')
-bomb_mat[:,-1].fill('#')
-
-view_mat = np.full((max_height, visual_width), '*', str)
-# view_mat = np.random.choice([' ' ,'*'], size = (max_height, visual_width), p = [visible_prob, 1 - visible_prob])
-
-for r in range(0, bomb_mat.shape[0]):
-    for c in range(0, bomb_mat.shape[1]):
-        if bomb_mat[r,c] == '#':
-            view_mat[r,c] = ' '
-
-cur_height = 0
-cursor_pos = (2,1)
-cur_credit = start_credit
-cur_item = default_item
 def try_use(item_name):
     global cur_credit, cur_item
     if cur_item == item_name:
@@ -110,7 +93,6 @@ def try_use(item_name):
 def t_next_scroll():
     return 1 / (speed_rate * math.log(cur_height + math.e))
 
-logs = deque([])
 def flush():
     console.clear()
 
@@ -135,14 +117,6 @@ def flush():
 def opt_item_switch(item_name):
     global cur_item
     cur_item = item_name
-
-def end_game(info):
-    logs.append("game over: " + info)
-    view_mat.fill(' ')
-    flush()
-    global keep_threads_running
-    keep_threads_running = False
-    quit()
 
 def opt_cursor_move(dir):
     global cursor_pos, cur_credit
@@ -219,12 +193,6 @@ def scroll():
     if cursor_pos[0] - cur_height < 1:
         end_game('left behind')
 
-
-console.init()
-reveal((2,1))
-flush()
-thlock = threading.Lock()
-
 def thready_input():
     while True:
         opt = console.getopt()
@@ -253,8 +221,54 @@ def thready_scroll():
             flush()
 
 
-keep_threads_running = True
-thread_input = threading.Thread(target=thready_input)
-thread_input.start()
-thready_scroll = threading.Thread(target=thready_scroll)
-thready_scroll.start()
+def start():
+    global bomb_mat, view_mat, cur_height, cursor_pos, cur_credit, cur_item, logs, thlock, keep_threads_running
+    
+    bomb_mat = np.vstack([np.full((start_height, visual_width), ' ', str),
+              np.random.choice([' ', 'B','#'], size = (max_height - start_height, visual_width), p = [1 - bomb_prob - wall_prob, bomb_prob, wall_prob]
+              )]
+            )
+    bomb_mat[:,0].fill('#')
+    bomb_mat[:,-1].fill('#')
+
+    view_mat = np.full((max_height, visual_width), '*', str)
+    # view_mat = np.random.choice([' ' ,'*'], size = (max_height, visual_width), p = [visible_prob, 1 - visible_prob])
+
+    for r in range(0, bomb_mat.shape[0]):
+        for c in range(0, bomb_mat.shape[1]):
+            if bomb_mat[r,c] == '#':
+                view_mat[r,c] = ' '
+
+    cur_height = 0
+    cursor_pos = (2,1)
+    cur_credit = start_credit
+    cur_item = default_item
+    
+    logs = deque([])
+
+    console.init()
+    reveal((2,1))
+    flush()
+    thlock = threading.Lock()
+
+
+    keep_threads_running = True
+    thread_input = threading.Thread(target=thready_input)
+    thread_input.start()
+    thread_scroll = threading.Thread(target=thready_scroll)
+    thread_scroll.start()
+
+def end_game(info):
+    logs.append("game over: " + info)
+    view_mat.fill(' ')
+    flush()
+    global keep_threads_running
+    keep_threads_running = False
+
+    console.put_str("press any key (twice) to quit")
+    console.getopt()
+    console.end()
+    quit()
+        
+
+start()
